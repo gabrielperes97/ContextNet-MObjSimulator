@@ -1,0 +1,18 @@
+{
+  "uuid":"2a2c1761-c8a4-42bb-8369-627198c13cea",
+  "actuators": [
+    {
+      "name":"door",
+      "data": true
+    },
+    {
+      "name":"air conditioner",
+      "data":"22"
+    },
+    {
+      "name":"water pump",
+      "data": false
+    }
+  ],
+  "waitResponse":true
+}
