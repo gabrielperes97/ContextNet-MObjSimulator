@@ -8,7 +8,7 @@ object MobileObjectsSimulator {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        if (args.size <= 2) {
+        if (args.size < 2) {
             println("Falta especificar Ip e porta")
             exit(1)
         }

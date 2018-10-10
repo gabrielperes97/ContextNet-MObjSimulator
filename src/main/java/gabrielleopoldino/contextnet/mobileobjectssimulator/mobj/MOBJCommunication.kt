@@ -1,13 +1,12 @@
 package gabrielleopoldino.contextnet.mobileobjectssimulator.mobj
 
-import java.io.BufferedOutputStream
-import java.io.IOException
-import java.io.PrintStream
+import java.io.*
 import java.net.InetSocketAddress
 import java.net.Socket
 import java.util.*
 import javax.json.Json
 import javax.json.JsonReader
+import javax.json.JsonWriter
 
 class MOBJCommunication constructor(val address: InetSocketAddress, val mobj: MOBJ){
 
@@ -36,20 +35,22 @@ class MOBJCommunication constructor(val address: InetSocketAddress, val mobj: MO
 
     inner class SendReceiveThread: Thread("Receive Thread"){
 
-        private lateinit var reader:JsonReader
+        private lateinit var reader: BufferedReader
         private lateinit var out: PrintStream
 
         override fun start() {
-            reader = Json.createReader(socket.getInputStream())
+            reader = BufferedReader(InputStreamReader(socket.getInputStream()))
             out = PrintStream(socket.getOutputStream())
             super.start()
         }
 
         override fun run() {
             while (socket.isConnected){
-                val json = reader.readObject()
+                val str = reader.readLine()
+                val json = Json.createReader(StringReader(str)).readObject()
                 mobj.handleMessages(json) {
-                    out.println(it.toString())
+                    out.println(it)
+                    out.flush()
                 }
             }
         }
