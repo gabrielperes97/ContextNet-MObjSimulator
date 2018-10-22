@@ -1,0 +1,52 @@
+{
+  "objects" : [
+    {
+      "sensors" : [
+        {
+          "name" : "Temperatura",
+          "type" : "number",
+          "lowerBound" : 10,
+          "upperBound" : 30
+        },
+        {
+          "name" : "Pressão",
+          "type" : "number",
+          "lowerBound" : 40,
+          "upperBound" : 60
+        },
+        {
+          "name" : "Humidade",
+          "type" : "number",
+          "lowerBound" : 90,
+          "upperBound" : 110
+        }
+      ],
+      "actuators" : [
+        {
+          "name" : "Bomba d'agua",
+          "type" : "number"
+        },
+        {
+          "name" : "Buzina",
+          "type" : "call"
+        }
+      ],
+      "sensorsActuators" : [
+        {
+          "name" : "Interruptor",
+          "sensor" : {
+            "type" : "boolean"
+          },
+          "actuator" : {
+            "type" : "boolean"
+          }
+        }
+      ],
+      "security" : {
+        "identity" : "certs/obj1.p12",
+        "identityPassword" : "123321",
+        "trust" : "certs/trustRoot.jks"
+      }
+    }
+  ]
+}

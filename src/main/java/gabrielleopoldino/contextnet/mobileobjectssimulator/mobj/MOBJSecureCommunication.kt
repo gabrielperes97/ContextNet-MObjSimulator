@@ -2,19 +2,28 @@ package gabrielleopoldino.contextnet.mobileobjectssimulator.mobj
 
 import java.io.*
 import java.net.InetSocketAddress
-import java.net.Socket
+import java.security.PrivateKey
+import java.security.Signature
 import java.util.*
 import javax.json.Json
-import javax.json.JsonReader
-import javax.json.JsonWriter
+import javax.json.JsonObject
+import javax.net.ssl.SSLContext
+import javax.net.ssl.SSLSocket
 
-open class MOBJCommunication constructor(val address: InetSocketAddress, val mobj: MOBJ){
+class MOBJSecureCommunication constructor(address: InetSocketAddress, mobj: MOBJ, val context: SSLContext, privateKey : PrivateKey): MOBJCommunication(address, mobj){
 
-    private val socket : Socket = Socket()
+    private val socket : SSLSocket = context.socketFactory.createSocket() as SSLSocket
     private val connectThread = ConnectThread()
     private val sendReceiveThread = SendReceiveThread()
 
-    open fun start() {
+    val signer = Signature.getInstance("SHA1withRSA")
+
+    init {
+        socket.needClientAuth = true
+        signer.initSign(privateKey)
+    }
+
+    override fun start() {
         connectThread.start()
     }
 
@@ -48,12 +57,24 @@ open class MOBJCommunication constructor(val address: InetSocketAddress, val mob
             while (socket.isConnected){
                 val str = reader.readLine()
                 val json = Json.createReader(StringReader(str)).readObject()
+                //Process message and Send-back data
                 mobj.handleMessages(json) {
-                    out.println(it)
+
+                    out.println(signJson(it))
                     out.flush()
                 }
             }
         }
+    }
+
+    fun signJson(message: JsonObject): JsonObject {
+
+        signer.update(message.toString().toByteArray())
+        val signBytes = signer.sign()
+        return Json.createObjectBuilder(message)
+                .add("MObj Signature", Arrays.toString(signBytes))
+                .build()
+
     }
 
 }
